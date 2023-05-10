@@ -1,12 +1,12 @@
-from rest_framework.views import APIView
-from rest_framework.decorators import api_view
-from vehiculosApp.api.serializers import VehiculoSerializer
-from vehiculosApp.models import Vehiculo
 from rest_framework import status
 from rest_framework.response import Response
-import sistema_transporte.helpers as res
+from rest_framework.decorators import api_view
+
+from vehiculosApp.api.serializers import VehiculoSerializer
+from vehiculosApp.models import Vehiculo
+from sistema_transporte import helpers as res
 @api_view(['GET', 'POST'])
-def vehiculo_api_view(request):
+def vehiculo_api_view(request) -> Response:
 
     #List 
     if request.method == 'GET':        
@@ -25,7 +25,7 @@ def vehiculo_api_view(request):
         return Response(res.HttpResponse(status.HTTP_400_BAD_REQUEST, vehiculos_serializer.errors, 'Algo salio mal'), status = status.HTTP_400_BAD_REQUEST)
     
 @api_view(['GET', 'PUT', 'DELETE'])
-def vehiculo_detail_view(request, pk):
+def vehiculo_detail_view(request, pk: int) -> Response:
 
     #Queryset (Consultar si el usuario existe)
     vehiculo = Vehiculo.objects.filter(id=pk).first()

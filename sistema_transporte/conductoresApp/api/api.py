@@ -1,26 +1,26 @@
-
-import sistema_transporte.helpers as res
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from conductoresApp.api.serializers import ConductorSerializer
-from conductoresApp.models import Conductor
 from rest_framework import status
 from rest_framework.response import Response
-from vehiculosApp.api.serializers import VehiculoSerializer
-from pedidosApp.api.serializers import PedidoSerializer
 
+from sistema_transporte import helpers as res
+from conductoresApp.api.serializers import ConductorSerializer
+from conductoresApp.models import Conductor
+from vehiculosApp.api.serializers import VehiculoSerializer
 from vehiculosApp.models import Vehiculo
+from pedidosApp.api.serializers import PedidoSerializer
 from pedidosApp.models import Pedido
 @api_view(['GET', 'POST'])
-def conductor_api_view(request):
+def conductor_api_view(request) -> Response:
 
-    #List users
+    #Listar conductores
     if request.method == 'GET':        
-        conductores = Conductor.objects.all().values('id', 'nombre','apellido', 'telefono', 'identificacion', 'direccion')
-        conductores_serializer = ConductorSerializer(conductores, many = True)
-        return  Response(res.HttpResponse(status.HTTP_200_OK, conductores_serializer.data, 'Lista de conductores'), status= status.HTTP_200_OK)
+        conductores = Conductor.objects.all()
+        conductores_serializer = ConductorSerializer(conductores, many=True)
+        #Response(content, status=status.HTTP_404_NOT_FOUND)
+        return Response(res.HttpResponse(status.HTTP_200_OK, conductores_serializer.data, 'Lista de conductores'), status= status.HTTP_200_OK)
     
-    #Create user
+    #Crear conductores
     elif request.method == 'POST':
         conductores_serializer = ConductorSerializer(data = request.data)
         if conductores_serializer.is_valid():
@@ -30,7 +30,7 @@ def conductor_api_view(request):
         return Response(res.HttpResponse( status.HTTP_400_BAD_REQUEST,  conductores_serializer.errors,  'Algo salio mal' ), status = status.HTTP_400_BAD_REQUEST)
     
 @api_view(['GET', 'PUT', 'DELETE'])
-def conductor_detail_view(request, pk):
+def conductor_detail_view(request, pk: int) -> Response:
 
     #Queryset (Consultar si el usuario existe)
     conductor = Conductor.objects.filter(id=pk).first()
@@ -60,7 +60,7 @@ def conductor_detail_view(request, pk):
 
 
 @api_view(['GET', 'PUT'])
-def vehiculos_asignados(request, pk):
+def vehiculos_asignados(request, pk: int) -> Response:
 
     #Queryset (Consultar si el usuario existe)
     vehiculos = Vehiculo.objects.filter(conductor_id = pk)
@@ -85,7 +85,7 @@ def vehiculos_asignados(request, pk):
     return Response(res.HttpResponse(status.HTTP_400_BAD_REQUEST, {}, 'No se han encontrado vehículos con estos datos'), status = status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
-def vehiculos_no_asignados(request):
+def vehiculos_no_asignados(request) -> Response:
 
     vehiculos = Vehiculo.objects.filter(conductor_id = None)
     if vehiculos:
@@ -100,7 +100,7 @@ def vehiculos_no_asignados(request):
 
 
 @api_view(['PUT'])
-def asignar_conductor_vehiculo(request):
+def asignar_conductor_vehiculo(request) -> Response:
     print('este es el id', request.data.get('id'))
     vehiculo = Vehiculo.objects.filter(id= request.data.get('id')).first()
 
@@ -117,7 +117,7 @@ def asignar_conductor_vehiculo(request):
         return Response(res.HttpResponse(status.HTTP_400_BAD_REQUEST, {}, 'No se han encontrado vehículos con estos datos'), status = status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
-def quitar_asignacion_vehiculo(request):
+def quitar_asignacion_vehiculo(request) -> Response:
 
     vehiculo = Vehiculo.objects.filter(id=request.data.get('id')).first()
 
@@ -134,7 +134,7 @@ def quitar_asignacion_vehiculo(request):
 
 
 @api_view(['GET', 'PUT'])
-def pedidos_asignados(request, pk):
+def pedidos_asignados(request, pk: int) -> Response:
     # Queryset (Consultar si el usuario existe)
     pedido = Pedido.objects.filter(conductor_id=pk)
 
@@ -164,7 +164,7 @@ def pedidos_asignados(request, pk):
 
 
 @api_view(['GET'])
-def pedidos_no_asignados(request):
+def pedidos_no_asignados(request) -> Response:
     pedidos = Vehiculo.objects.filter(conductor_id=None)
     if pedidos:
         # Find user by id
@@ -179,7 +179,7 @@ def pedidos_no_asignados(request):
 
 
 @api_view(['PUT'])
-def asignar_conductor_pedido(request):
+def asignar_conductor_pedido(request) -> Response:
     print('este es el id', request.data.get('id'))
     pedido = Pedido.objects.filter(id=request.data.get('id')).first()
 
@@ -202,7 +202,7 @@ def asignar_conductor_pedido(request):
 
 
 @api_view(['PUT'])
-def quitar_asignacion_pedido(request):
+def quitar_asignacion_pedido(request) -> Response:
     pedido = Vehiculo.objects.filter(id=request.data.get('id')).first()
 
     if pedido:
