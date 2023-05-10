@@ -32,6 +32,7 @@ BASE_APPS = [
 LOCAL_APPS = [
     'conductoresApp',
     'vehiculosApp',
+    'pedidosApp',
 ]
 #Librerias externas
 THIRD_APPS = [
