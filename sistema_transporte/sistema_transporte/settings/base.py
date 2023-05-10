@@ -116,5 +116,11 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# django-rest-framework - https://www.django-rest-framework.org/api-guide/settings/
+REST_FRAMEWORK = {
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning'
+}
+
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
 CORS_URLS_REGEX = r"^localhost.*$" #configurar con el dominio
