@@ -1,9 +1,13 @@
 from django.db import models
+from django.core.validators import MaxValueValidator,MinValueValidator
 from conductoresApp.models import Conductor
 
 
 class Pedido(models.Model):
-    id = models.IntegerField(primary_key=True, max_length=6)
+    id = models.PositiveIntegerField(primary_key=True, validators=[
+        MaxValueValidator(limit_value=999999999999, message="Identificador fuera de los limites superiores"),
+        MinValueValidator(limit_value=1, message="Identificador fuera de los limites inferiores"),
+    ])
     tipo_pedido = models.CharField('Tipo', max_length=20)
     direccion = models.CharField('Direccion', max_length=50, null=False)
     conductor_id = models.ForeignKey(
