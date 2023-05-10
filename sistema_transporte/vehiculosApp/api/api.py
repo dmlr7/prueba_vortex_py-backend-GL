@@ -14,7 +14,7 @@ def vehiculo_api_view(request):
         vehiculos_serializer  = VehiculoSerializer(vehiculos, many = True)
         return  Response(res.HttpResponse(status.HTTP_200_OK, vehiculos_serializer.data, 'Lista de vehiculos'), status= status.HTTP_200_OK)
     
-    #Create user
+    #Create
     elif request.method == 'POST':
         vehiculos_serializer = VehiculoSerializer(data = request.data)
         if vehiculos_serializer.is_valid():

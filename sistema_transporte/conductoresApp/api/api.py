@@ -1,3 +1,4 @@
+
 import sistema_transporte.helpers as res
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
@@ -6,8 +7,10 @@ from conductoresApp.models import Conductor
 from rest_framework import status
 from rest_framework.response import Response
 from vehiculosApp.api.serializers import VehiculoSerializer
+from pedidosApp.api.serializers import PedidoSerializer
 
 from vehiculosApp.models import Vehiculo
+from pedidosApp.models import Pedido
 @api_view(['GET', 'POST'])
 def conductor_api_view(request):
 
@@ -66,8 +69,9 @@ def vehiculos_asignados(request, pk):
 
         #Find user by id
         if request.method == 'GET':
-            vehiculos_serializer =  VehiculoSerializer(vehiculos, many=True)
-            return Response( res.HttpResponse(status.HTTP_200_OK, vehiculos_serializer.data, 'Vehículos asociados') ,status=status.HTTP_200_OK)
+            vehiculos_serializer = VehiculoSerializer(vehiculos, many=True)
+            return Response(res.HttpResponse(status.HTTP_200_OK, vehiculos_serializer.data, 'Vehículos asociados'),
+                            status=status.HTTP_200_OK)
         
         #Update user
         elif request.method == 'PUT':
@@ -80,25 +84,23 @@ def vehiculos_asignados(request, pk):
             return Response(res.HttpResponse(status.HTTP_400_BAD_REQUEST, vehiculos_serializer.errors, 'Algo salio mal'), status = status.HTTP_400_BAD_REQUEST)
     return Response(res.HttpResponse(status.HTTP_400_BAD_REQUEST, {}, 'No se han encontrado vehículos con estos datos'), status = status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET', 'PUT'])
+@api_view(['GET'])
 def vehiculos_no_asignados(request):
 
-    
     vehiculos = Vehiculo.objects.filter(conductor_id = None)
     if vehiculos:
-
         #Find user by id
+
         if request.method == 'GET':
             vehiculos_serializer = VehiculoSerializer(vehiculos, many=True)
             return Response(res.HttpResponse(status.HTTP_200_OK, vehiculos_serializer.data, ''),status=status.HTTP_200_OK)
-        
-        #Update user
-    
+
+
     return Response(res.HttpResponse(status.HTTP_400_BAD_REQUEST, {}, 'No se han encontrado vehículos con estos datos'), status = status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['PUT'])
-def asignar_conductor(request):
+def asignar_conductor_vehiculo(request):
     print('este es el id', request.data.get('id'))
     vehiculo = Vehiculo.objects.filter(id= request.data.get('id')).first()
 
@@ -115,9 +117,9 @@ def asignar_conductor(request):
         return Response(res.HttpResponse(status.HTTP_400_BAD_REQUEST, {}, 'No se han encontrado vehículos con estos datos'), status = status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
-def quitar_asignacion(request, pk):
+def quitar_asignacion_vehiculo(request):
 
-    vehiculo = Vehiculo.objects.filter(id= request.data.get('id')).first()
+    vehiculo = Vehiculo.objects.filter(id=request.data.get('id')).first()
 
     if vehiculo:
 
@@ -129,3 +131,92 @@ def quitar_asignacion(request, pk):
                     return Response(res.HttpResponse(status.HTTP_200_OK, vehiculos_serializer.data, 'Se quita asignación'), status= status.HTTP_200_OK)
                 return Response(res.HttpResponse(status.HTTP_400_BAD_REQUEST, vehiculos_serializer.errors, 'Algo salio mal'), status = status.HTTP_400_BAD_REQUEST)
     return Response(res.HttpResponse(status.HTTP_400_BAD_REQUEST, {}, 'No se han encontrado vehículos con estos datos'), status = status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'PUT'])
+def pedidos_asignados(request, pk):
+    # Queryset (Consultar si el usuario existe)
+    pedido = Pedido.objects.filter(conductor_id=pk)
+
+    if pedido:
+
+        # Find user by id
+        if request.method == 'GET':
+            pedidos_serializer = PedidoSerializer(pedido, many=True)
+            return Response(res.HttpResponse(status.HTTP_200_OK, pedidos_serializer.data, 'Vehículos asociados'),
+                            status=status.HTTP_200_OK)
+
+        # Update user
+        elif request.method == 'PUT':
+            request.data
+            pedido = Pedido.objects.filter(id=request.data.get('id')).first()
+            pedidos_serializer = PedidoSerializer(pedido, data=request.data)
+            if pedidos_serializer.is_valid():
+                pedidos_serializer.save()
+                return Response(
+                    res.HttpResponse(status.HTTP_200_OK, pedidos_serializer.data, 'Actualización exitosa'),
+                    status=status.HTTP_200_OK)
+            return Response(
+                res.HttpResponse(status.HTTP_400_BAD_REQUEST, pedidos_serializer.errors, 'Algo salio mal'),
+                status=status.HTTP_400_BAD_REQUEST)
+    return Response(res.HttpResponse(status.HTTP_400_BAD_REQUEST, {}, 'No se han encontrado vehículos con estos datos'),
+                    status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def pedidos_no_asignados(request):
+    pedidos = Vehiculo.objects.filter(conductor_id=None)
+    if pedidos:
+        # Find user by id
+
+        if request.method == 'GET':
+            pedidos_serializer = PedidoSerializer(pedidos, many=True)
+            return Response(res.HttpResponse(status.HTTP_200_OK, pedidos_serializer.data, ''),
+                            status=status.HTTP_200_OK)
+
+    return Response(res.HttpResponse(status.HTTP_400_BAD_REQUEST, {}, 'No se han encontrado vehículos con estos datos'),
+                    status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['PUT'])
+def asignar_conductor_pedido(request):
+    print('este es el id', request.data.get('id'))
+    pedido = Pedido.objects.filter(id=request.data.get('id')).first()
+
+    if pedido:
+
+        if request.method == 'PUT':
+
+            pedidos_serializer = VehiculoSerializer(pedido, data=request.data)
+            if pedidos_serializer.is_valid() and pedido.conductor_id == None:
+                pedidos_serializer.save()
+                return Response(res.HttpResponse(status.HTTP_200_OK, pedidos_serializer.data, 'Asignación completa'),
+                                status=status.HTTP_200_OK)
+            return Response(
+                res.HttpResponse(status.HTTP_400_BAD_REQUEST, pedidos_serializer.errors, 'Algo salio mal'),
+                status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response(
+            res.HttpResponse(status.HTTP_400_BAD_REQUEST, {}, 'No se han encontrado vehículos con estos datos'),
+            status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['PUT'])
+def quitar_asignacion_pedido(request):
+    pedido = Vehiculo.objects.filter(id=request.data.get('id')).first()
+
+    if pedido:
+
+        if request.method == 'PUT':
+            request.data
+            pedidos_serializer = PedidoSerializer(pedido, data=request.data)
+            if pedidos_serializer.is_valid():
+                pedidos_serializer.save()
+                return Response(res.HttpResponse(status.HTTP_200_OK, pedidos_serializer.data, 'Se quita asignación'),
+                                status=status.HTTP_200_OK)
+            return Response(
+                res.HttpResponse(status.HTTP_400_BAD_REQUEST, pedidos_serializer.errors, 'Algo salio mal'),
+                status=status.HTTP_400_BAD_REQUEST)
+    return Response(res.HttpResponse(status.HTTP_400_BAD_REQUEST, {}, 'No se han encontrado vehículos con estos datos'),
+                    status=status.HTTP_400_BAD_REQUEST)
+

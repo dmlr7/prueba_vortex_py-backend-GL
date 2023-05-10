@@ -27,7 +27,7 @@ def pedido_api_view(request):
         return Response(pedidos_serializer.errors, status = status.HTTP_400_BAD_REQUEST)
     
 @api_view(['GET', 'PUT', 'DELETE'])
-def conductor_detail_view(request, pk):
+def pedido_detail_view(request, pk):
 
     #Queryset (Consultar si el usuario existe)
     pedido = Pedido.objects.filter(id=pk).first()
@@ -52,5 +52,5 @@ def conductor_detail_view(request, pk):
         elif request.method == 'DELETE':
             pedido = Pedido.objects.filter(id=pk).first()
             pedido.delete()
-            return Response({'message': 'Conductor eliminado correctamente!'} , status= status.HTTP_200_OK)
-    return Response({'message': 'No se ha encontrado un conductor con estos datos'}, status = status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'Pedido eliminado correctamente!'} , status= status.HTTP_200_OK)
+    return Response({'message': 'No se ha encontrado el pedido con estos datos'}, status = status.HTTP_400_BAD_REQUEST)
