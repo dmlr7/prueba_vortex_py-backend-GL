@@ -1,3 +1,4 @@
+
 Para esta prueba se uso django rest framework implementando 3 aplicaciones para cada uno de los modelos diseñados en el diagrama e-r 
 Tambien se uso psycopg2 para la implementacion de postgresql 
 Y de orm se uso qureysets y modelos para realizar las consultas por medio de las apiview de django y los modelos para generar la estructura de datos en la base de datos.
@@ -50,3 +51,15 @@ python3 manage.py createsuperuser
 se ingresan los datos que se solicita y se levanta el servidor para acceder al djando admin
 
 Por ultimo, las versiones de todas las herramientas utilizadas en el proyecto se encuentran en el archivo requirements.txt
+
+
+Frameworks
+- Django
+- Django Rest Framewkork
+- corsheaders:
+    con el fin de habilitar CORS se usa este framework y se habilita usando regex sobre localhost, el cual puede ser configurado sobre el dominio
+    
+Se configura adicionalmente django rest framework para aceptar versionamiento de las APIs, con el fin de que cuando cambie alguna, exista un tiempo de gracia para la actualizacion por parte de los clientes
+
+
+
